@@ -35,7 +35,8 @@ namespace ClientApp.Controllers
                                                     "Make sure that SaveTokens is set to true in the OIDC options.");
             }
 
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:54540/api/message");
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://authorizationserveropeniddictsample.azurewebsites.net/api/message");
+            //var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:54540/api/message");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var response = await _client.SendAsync(request, cancellationToken);

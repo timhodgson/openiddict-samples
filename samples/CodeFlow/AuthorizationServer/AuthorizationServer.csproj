@@ -10,6 +10,7 @@
 
   <PropertyGroup>
     <TypeScriptEnabled>false</TypeScriptEnabled>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
