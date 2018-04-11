@@ -5,6 +5,7 @@ using AuthorizationServer.Models;
 using AuthorizationServer.Services;
 using AuthorizationServer.ViewModels.Account;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -122,6 +123,35 @@ namespace AuthorizationServer.Controllers
             // If we got this far, something failed, redisplay form
             return View(model);
         }
+
+        //
+        // POST: /Account/RegisterFromApp
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> RegisterFromApp([FromBody] RegisterViewModel model)
+        {
+            EnsureDatabaseCreated(_applicationDbContext);
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByNameAsync(model.Email);
+                if (user != null)
+                {
+                    return StatusCode(StatusCodes.Status409Conflict);
+                }
+
+                user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var result = await _userManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
+                {
+                    return Ok();
+                }
+                AddErrors(result);
+            }
+
+            // If we got this far, something failed.
+            return BadRequest(ModelState);
+        }
+
 
         //
         // POST: /Account/LogOff

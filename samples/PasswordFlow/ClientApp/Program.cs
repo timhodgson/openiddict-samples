@@ -14,11 +14,23 @@ namespace ClientApp
     {
         public static void Main(string[] args) => MainAsync(args).GetAwaiter().GetResult();
 
+        public static string baseUri = null;
+
         public static async Task MainAsync(string[] args)
         {
             var client = new HttpClient();
 
-            const string email = "bob@le-magnifique.com", password = "}s>EWG@f4g;_v7nB";
+            if (System.Diagnostics.Debugger.IsAttached == false)
+            {
+                baseUri = "http://authorizationserveropeniddictsample.azurewebsites.net";
+            }
+            else
+            {
+                baseUri = "http://localhost:54540";
+            }
+
+
+            const string email = "TIMHODGSON@HOTMAIL.COM", password = "Karen$1";
 
             await CreateAccountAsync(client, email, password);
 
@@ -34,7 +46,7 @@ namespace ClientApp
 
         public static async Task CreateAccountAsync(HttpClient client, string email, string password)
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:58795/Account/Register")
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Format("{0}/Account/RegisterFromApp", baseUri))
             {
                 Content = new StringContent(JsonConvert.SerializeObject(new { email, password }), Encoding.UTF8, "application/json")
             };
@@ -51,7 +63,7 @@ namespace ClientApp
 
         public static async Task<string> GetTokenAsync(HttpClient client, string email, string password)
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:58795/connect/token");
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Format("{0}/connect/token", baseUri));
             request.Content = new FormUrlEncodedContent(new Dictionary<string, string>
             {
                 ["grant_type"] = "password",
@@ -73,7 +85,7 @@ namespace ClientApp
 
         public static async Task<string> GetResourceAsync(HttpClient client, string token)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:58795/api/message");
+            var request = new HttpRequestMessage(HttpMethod.Get, string.Format("{0}/api/message", baseUri));
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var response = await client.SendAsync(request, HttpCompletionOption.ResponseContentRead);
